@@ -1,4 +1,4 @@
-from setuptools import find_packages,setup
+from setuptools import find_packages, setup
 from typing import List
 
 def get_requirements()->List[str]:
@@ -21,10 +21,9 @@ def get_requirements()->List[str]:
                     requirement_list.append(requirement)
     except FileNotFoundError:
         print("requirements.txt file not found.")
-
-    
         
     return requirement_list
+
 print(get_requirements())
 
 setup(
