@@ -1,0 +1,5 @@
+notebook/
+.env
+.gitignore
+.vscode/
+.idea/

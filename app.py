@@ -27,7 +27,7 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 # Download the embeddings model from the Hugging Face Hub.
 embeddings = download_hugging_face_embeddings()
 
-index_name = "customer-support-chatbot-with-llmops-index" 
+index_name = "cs-chatbot-pdfs-index" 
 
 # Embed each chunk and upsert the embeddings into your Pinecone index.
 docsearch = PineconeVectorStore.from_existing_index(

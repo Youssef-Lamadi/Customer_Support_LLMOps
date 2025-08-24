@@ -1,0 +1,59 @@
+name: Deploy Application Docker Image to Azure VM
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  Continuous-Integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.ACR_LOGIN_SERVER }} # e.g., myregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build, tag, and push image to ACR
+        id: build-image
+        env:
+          IMAGE_NAME: ${{ secrets.ACR_LOGIN_SERVER }}/${{ secrets.ACR_REPO }}:latest
+        run: |
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+          echo "::set-output name=image::$IMAGE_NAME"
+
+  Continuous-Deployment:
+    needs: Continuous-Integration
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to ACR
+        run: |
+          docker login ${{ secrets.ACR_LOGIN_SERVER }} \
+          --username ${{ secrets.ACR_USERNAME }} \
+          --password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Run Docker Image to serve users
+        run: |
+          docker pull ${{ steps.build-image.outputs.image }}
+          docker stop myapp || true
+          docker rm myapp || true
+          docker run -d \
+            --name myapp \
+            -e PINECONE_API_KEY="${{ secrets.PINECONE_API_KEY }}" \
+            -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            -p 8080:8080 \
+            ${{ steps.build-image.outputs.image }}
