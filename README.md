@@ -108,3 +108,13 @@ Chatbot Deployment on Azure
         AZURE_CREDENTIALS = value is a json file 
         to get the json file run this command :
         az ad sp create-for-rbac --name "github-actions" --role contributor --scopes /subscriptions/<subscribtionid> --sdk-auth
+
+        AZURE_REGION 
+        ACR_REPO = Your repository name in ACR when to store the docker image
+        IMAGE_NAME = the name of the docker image
+        OPENAI_API_KEY
+        PINECONE_API_KEY
+
+    create .github/workflows/cicd.yaml and add the code needed to it.
+
+4. push your code to trigger the ci cd pipeline
