@@ -117,4 +117,4 @@ Chatbot Deployment on Azure
 
     create .github/workflows/cicd.yaml and add the code needed to it.
 
-4. push your code to trigger the ci cd pipeline
+4. push your code to trigger the ci cd pipeline oki
