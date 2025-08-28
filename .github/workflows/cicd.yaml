@@ -34,6 +34,9 @@ jobs:
           docker push $IMAGE_NAME
           echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
 
+      - name: Debug image output
+        run: echo "Image to pull: ${{ needs.Continuous-Integration.outputs.image }}"
+
   Continuous-Deployment:
     needs: Continuous-Integration
     runs-on: self-hosted
@@ -46,6 +49,9 @@ jobs:
           docker login ${{ secrets.ACR_LOGIN_SERVER }} \
           --username ${{ secrets.ACR_USERNAME }} \
           --password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Debug image output
+        run: echo "Image to pull: ${{ needs.Continuous-Integration.outputs.image }}"
 
       - name: Run Docker Image to serve users
         run: |
