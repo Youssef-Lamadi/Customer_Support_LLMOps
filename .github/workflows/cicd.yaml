@@ -42,5 +42,30 @@ jobs:
         run: |
           echo "Docker image pushed: ${{ steps.build-image.outputs.image }}"
 
+  Continuous-Deployment:
+    needs: Continuous-Integration
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to ACR
+        run: |
+          IMAGE=${{ needs.Continuous-Integration.outputs.image }}
+          # Login to ACR
+          docker login ${{ secrets.ACR_LOGIN_SERVER }} \
+            --username ${{ secrets.ACR_USERNAME }} \
+            --password ${{ secrets.ACR_PASSWORD }}
+
+      - name: Run Docker Image to serve users
+        run: |
+          docker pull $IMAGE
+          docker run -d \
+            --name chatbot-container \
+            -e PINECONE_API_KEY="${{ secrets.PINECONE_API_KEY }}" \
+            -e OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
+            -p 8080:8080 \
+            $IMAGE
 
 
