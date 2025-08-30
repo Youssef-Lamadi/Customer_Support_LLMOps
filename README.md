@@ -118,3 +118,36 @@ Chatbot Deployment on Azure
     create .github/workflows/cicd.yaml and add the code needed to it.
 
 4. push your code to trigger the ci cd pipeline oki
+
+
+
+5. ## 📥 Automated Data Ingestion Pipeline
+
+To ensure that the chatbot always has access to the most recent documents, this project includes an **automated data ingestion pipeline** powered by GitHub Actions.
+
+### 🔄 How it works
+- The workflow file [`data-ingestion.yaml`](.github/workflows/data-ingestion.yaml) is configured to **trigger automatically** whenever files inside the `data/` folder (e.g., PDF documents) are added, updated, or deleted.
+- Once triggered, the workflow:
+  1. Checks out the repository.
+  2. Sets up the Python environment.
+  3. Installs all dependencies from `requirements.txt`.
+  4. Executes the script [`src/store_index.py`](src/store_index.py).
+
+### ⚙️ What the script does
+The ingestion script performs the following steps:
+1. **Document parsing** → Reads all PDF files located in the `data/` directory.
+2. **Text preprocessing** → Splits each document into smaller text chunks for efficient processing.
+3. **Embedding generation** → Converts each chunk into vector embeddings using OpenAI’s API.
+4. **Vector storage** → Uploads these embeddings into **Pinecone Vector Database**, making the content instantly searchable.
+
+### ✅ Why this matters
+- Every time you update the documents in the `data/` folder, the ingestion workflow ensures that the knowledge base is refreshed without manual intervention.
+- This keeps the RAG-based chatbot always in sync with the **latest information**.
+
+### This will show a little badge:
+![Data Ingestion Pipeline](https://github.com/Youssef-Lamadi/Customer_Support_LLMOps/actions/workflows/data-ingestion.yaml/badge.svg)
+
+    
+    🟢 Green = last ingestion run succeeded
+    🔴 Red = last ingestion run failed
+    ⚪ Grey = no runs yet

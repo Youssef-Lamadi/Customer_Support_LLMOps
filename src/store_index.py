@@ -4,17 +4,14 @@ from src.helper import load_pdf_file, filter_to_minimal_docs, text_split, downlo
 from pinecone import Pinecone
 from pinecone import ServerlessSpec 
 from langchain_pinecone import PineconeVectorStore
-from langchain_huggingface import HuggingFaceEmbeddings
 
 def store_data_in_index():
     load_dotenv()
 
     # Access the API keys
     PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
-    OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
 
     os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-    os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
     # Get project root (parent of "src")
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
