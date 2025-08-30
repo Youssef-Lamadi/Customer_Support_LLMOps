@@ -30,10 +30,9 @@ jobs:
         env:
           ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
           ACR_REPO: ${{ secrets.ACR_REPO }}
-          IMAGE_TAG: ${{ github.sha }}  # dynamic tag using commit SHA
+          IMAGE_TAG: latest
         run: |
           IMAGE_NAME=$ACR_LOGIN_SERVER/$ACR_REPO:$IMAGE_TAG
-          echo "Building Docker image $IMAGE_NAME ..."
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
           echo "image=$IMAGE_NAME" >> $GITHUB_OUTPUT
@@ -46,13 +45,17 @@ jobs:
     needs: Continuous-Integration
     runs-on: self-hosted
 
+    env:
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_REPO: ${{ secrets.ACR_REPO }}
+      IMAGE_TAG: latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Login to ACR
         run: |
-          IMAGE=${{ needs.Continuous-Integration.outputs.image }}
           # Login to ACR
           docker login ${{ secrets.ACR_LOGIN_SERVER }} \
             --username ${{ secrets.ACR_USERNAME }} \
@@ -60,6 +63,7 @@ jobs:
 
       - name: Run Docker Image to serve users
         run: |
+          IMAGE=$ACR_LOGIN_SERVER/$ACR_REPO:$IMAGE_TAG
           docker pull $IMAGE
           docker run -d \
             --name chatbot-container \
