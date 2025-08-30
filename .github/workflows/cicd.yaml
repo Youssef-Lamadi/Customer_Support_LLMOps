@@ -61,6 +61,13 @@ jobs:
             --username ${{ secrets.ACR_USERNAME }} \
             --password ${{ secrets.ACR_PASSWORD }}
 
+      - name: Remove old container if exists and prune unused data
+        run: |
+          docker stop chatbot-container || true
+          docker rm chatbot-container || true
+          docker system prune -af
+          docker volume prune -f
+
       - name: Run Docker Image to serve users
         run: |
           IMAGE=$ACR_LOGIN_SERVER/$ACR_REPO:$IMAGE_TAG
